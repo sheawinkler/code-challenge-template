@@ -9,7 +9,18 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from app import db
-from app.models import CropYield
+from app.models import CropYield, IngestionEvent, IngestionRun
+
+
+def _log_event(session, run_id: int, level: str, message: str, created_at: datetime) -> None:
+    session.add(
+        IngestionEvent(
+            ingestion_run_id=run_id,
+            level=level,
+            message=message,
+            created_at=created_at,
+        )
+    )
 
 
 def _rowcount(result) -> int:
@@ -45,8 +56,16 @@ def ingest_yield(file_path: Path) -> dict[str, int]:
 
     session = db.SessionLocal()
     try:
-        start = datetime.now(timezone.utc)
+        run_started_at = datetime.now(timezone.utc)
+        run = IngestionRun(dataset="yield", started_at=run_started_at)
+        session.add(run)
+        session.commit()
+        session.refresh(run)
+
+        start = run_started_at
         logging.info("Yield ingestion started at %s", start.isoformat())
+        _log_event(session, run.id, "INFO", "yield ingestion started", start)
+        session.commit()
 
         total_processed = 0
         total_inserted = 0
@@ -68,6 +87,20 @@ def ingest_yield(file_path: Path) -> dict[str, int]:
         logging.info("Yield ingestion finished at %s", end.isoformat())
         logging.info("Yield records processed: %s", total_processed)
         logging.info("Yield records inserted: %s", total_inserted)
+
+        _log_event(
+            session,
+            run.id,
+            "INFO",
+            f"processed={total_processed} inserted={total_inserted}",
+            end,
+        )
+
+        run.finished_at = end
+        run.processed_count = total_processed
+        run.inserted_raw_count = total_inserted
+        run.upserted_curated_count = total_inserted
+        session.commit()
 
         return {"processed": total_processed, "inserted": total_inserted}
     finally:

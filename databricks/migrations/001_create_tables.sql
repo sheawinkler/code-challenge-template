@@ -27,6 +27,14 @@ CREATE TABLE IF NOT EXISTS ingestion_runs (
   conflicts_count BIGINT
 ) USING DELTA;
 
+CREATE TABLE IF NOT EXISTS ingestion_events (
+  id BIGINT,
+  ingestion_run_id BIGINT NOT NULL,
+  level STRING NOT NULL,
+  message STRING NOT NULL,
+  created_at TIMESTAMP NOT NULL
+) USING DELTA;
+
 CREATE TABLE IF NOT EXISTS weather_records_raw (
   id BIGINT,
   station_id STRING NOT NULL,

@@ -12,6 +12,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from app import db
 from app.models import (
     IngestionRun,
+    IngestionEvent,
     WeatherConflict,
     WeatherRecord,
     WeatherRecordRaw,
@@ -133,6 +134,17 @@ def _log_conflicts(session, run_id: int, created_at: datetime) -> int:
     return total_conflicts
 
 
+def _log_event(session, run_id: int, level: str, message: str, created_at: datetime) -> None:
+    session.add(
+        IngestionEvent(
+            ingestion_run_id=run_id,
+            level=level,
+            message=message,
+            created_at=created_at,
+        )
+    )
+
+
 def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
     if not data_dir.exists():
         raise FileNotFoundError(f"Data directory not found: {data_dir}")
@@ -153,6 +165,8 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
 
         start = datetime.now(timezone.utc)
         logging.info("Weather ingestion started at %s", start.isoformat())
+        _log_event(session, run.id, "INFO", "weather ingestion started", start)
+        session.commit()
 
         total_processed = 0
         total_inserted = 0
@@ -345,9 +359,24 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
         )
         session.execute(update_stmt)
         session.commit()
+        _log_event(
+            session,
+            run.id,
+            "INFO",
+            f"curated upsert completed for run {run.id}",
+            datetime.now(timezone.utc),
+        )
+        session.commit()
 
         conflict_created_at = datetime.now(timezone.utc)
         conflicts_logged = _log_conflicts(session, run.id, conflict_created_at)
+        _log_event(
+            session,
+            run.id,
+            "INFO",
+            f"conflicts logged: {conflicts_logged}",
+            conflict_created_at,
+        )
         session.commit()
 
         distinct_pairs = (
@@ -364,6 +393,14 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
         logging.info("Weather raw records inserted: %s", total_inserted)
         logging.info("Weather conflicts logged: %s", conflicts_logged)
         logging.info("Weather curated rows upserted: %s", upserted_curated)
+
+        _log_event(
+            session,
+            run.id,
+            "INFO",
+            f"processed={total_processed} raw_inserted={total_inserted} curated_upserted={upserted_curated}",
+            end,
+        )
 
         run.finished_at = end
         run.processed_count = total_processed

@@ -2,7 +2,7 @@
 
 ## Quick start
 
-Prereqs: `uv` (recommended). If you don’t have `uv`, you can use `python -m venv` + `pip install -r requirements.txt -r requirements-dev.txt` instead.
+Prereqs: `uv` (recommended). If you don’t have `uv`, no worries — you can use `python -m venv` + `pip install -r requirements.txt -r requirements-dev.txt` instead.
 
 ```bash
 uv venv
@@ -33,9 +33,15 @@ API docs: `http://127.0.0.1:8000/docs`
 uv run pytest
 ```
 
+Optional Postgres smoke test (only runs if you set a Postgres URL):
+
+```bash
+POSTGRES_TEST_URL=postgresql://user:pass@localhost:5432/weather uv run pytest -m postgres
+```
+
 ## Optional helpers
 
-`scripts/run.sh` wraps common commands (requires `uv`):
+If you want shortcuts, `scripts/run.sh` wraps common commands (requires `uv`):
 
 ```bash
 scripts/run.sh all
@@ -57,6 +63,8 @@ just check
 
 - Default: SQLite file at `./weather_yield.db`.
 - Postgres: set `DATABASE_URL`, then run `alembic upgrade head`.
+  - On Postgres, migration `0004_postgres_partition_raw` converts `weather_records_raw` into yearly range partitions with hash subpartitions on `station_id`.
+  - If you plan to use Postgres, it’s best to run migrations before a large ingestion to avoid a big copy step.
 
 ## Endpoints
 
@@ -71,10 +79,11 @@ All endpoints support pagination (`page`, `page_size`) and filtering via query p
 - Raw ingestion: `weather_records_raw` (append-only with provenance).
 - Curated data: `weather_records` (deduped by station/date).
 - Conflicts: `weather_conflicts` (raw rows that disagree with curated values).
+- Ingestion tracking: `ingestion_runs` and `ingestion_events`.
 
 ## Docker (optional)
 
-Build and run the API with SQLite (data persisted in a named volume):
+If you want a containerized run, build and run the API with SQLite (data persisted in a named volume):
 
 ```bash
 docker compose up --build

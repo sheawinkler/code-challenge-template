@@ -2,7 +2,7 @@
 
 This directory provides a separate migration/ingestion path tailored to Databricks SQL/Delta Lake.
 
-- `migrations/`: Databricks SQL DDL scripts (Delta tables, minimal constraints), including raw, curated, and conflict-log tables.
+- `migrations/`: Databricks SQL DDL scripts (Delta tables, minimal constraints), including raw, curated, conflict-log, and ingestion event tables.
 - `ingest/`: placeholders for Databricks Jobs (PySpark) that load raw weather/yield data into Delta tables and then merge into curated tables.
 
 Typical flow:

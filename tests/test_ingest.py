@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 
 from app import db
 from app.ingest.weather import ingest_weather
-from app.models import WeatherConflict, WeatherRecord, WeatherRecordRaw
+from app.models import IngestionEvent, WeatherConflict, WeatherRecord, WeatherRecordRaw
 
 
 def test_weather_ingest_idempotent(test_engine, tmp_path):
@@ -33,6 +33,8 @@ def test_weather_ingest_idempotent(test_engine, tmp_path):
         assert record_with_values.max_temp_tenths_c == 15
         conflicts = session.execute(select(func.count()).select_from(WeatherConflict)).scalar_one()
         assert conflicts == 1
+        events = session.execute(select(func.count()).select_from(IngestionEvent)).scalar_one()
+        assert events >= 1
 
     ingest_weather(tmp_path, batch_size=1)
 

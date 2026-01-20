@@ -69,6 +69,16 @@ class IngestionRun(Base):
     conflicts_count = Column(Integer, nullable=False, default=0)
 
 
+class IngestionEvent(Base):
+    __tablename__ = "ingestion_events"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ingestion_run_id = Column(Integer, ForeignKey("ingestion_runs.id"), nullable=False)
+    level = Column(String, nullable=False)
+    message = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+
+
 class WeatherRecordRaw(Base):
     __tablename__ = "weather_records_raw"
 
