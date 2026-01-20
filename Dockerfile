@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY requirements.txt requirements-dev.txt ./
-RUN pip install --no-cache-dir uv && uv pip install -r requirements.txt
+RUN pip install --no-cache-dir uv && uv pip install --system -r requirements.txt
 
 COPY alembic ./alembic
 COPY alembic.ini ./
