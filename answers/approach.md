@@ -38,6 +38,14 @@
 ## Logs table
 - `ingestion_events` is a lightweight log table tied to `ingestion_runs`.
 - It captures key ingestion milestones (start, merge, conflicts, end) in a queryable format.
+- Example (find conflict-related log entries):
+
+```sql
+SELECT *
+FROM ingestion_events
+WHERE message LIKE '%conflicts logged%'
+ORDER BY created_at DESC;
+```
 
 ## Databricks scaffolding
 - Separate DDL for raw + curated + conflict tables.
