@@ -4,7 +4,7 @@ default:
   @just --list
 
 setup:
-  uv venv
+  if [[ "${UV_VENV_CLEAR:-0}" == "1" ]]; then uv venv --clear; else uv venv --allow-existing; fi
   uv pip install -r requirements.txt -r requirements-dev.txt
 
 migrate:

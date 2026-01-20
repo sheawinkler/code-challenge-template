@@ -2,7 +2,7 @@
 
 ## Quick start
 
-If you just want the app running, follow the block below. I also included `just` and `scripts.run.sh` shortcuts.
+If you just want the app running, follow the block below. I also included `just` and `scripts/run.sh` shortcuts.
 
 Prereqs: `uv` (recommended). If you don’t have `uv`, no worries — you can use `python -m venv` + `pip install -r requirements.txt -r requirements-dev.txt` instead.
 
@@ -50,6 +50,7 @@ POSTGRES_TEST_URL=postgresql://user:pass@localhost:5432/weather uv run pytest -m
 
 ## Justfile & scripts/run.sh
 Quickly run with `scripts/run.sh all` or `just ingest-and-launch-api` (`install just`).
+Need a fresh rebuild? Set `UV_VENV_CLEAR=1` to wipe and recreate the venv on the next run.
 
 
 ## Database configuration

@@ -11,6 +11,15 @@ DATA_DIR=${DATA_DIR:-wx_data}
 YIELD_FILE=${YIELD_FILE:-yld_data/US_corn_grain_yield.txt}
 PORT=${PORT:-3767}
 export PYTHONPATH=${PYTHONPATH:-src}
+VENV_CLEAR=${UV_VENV_CLEAR:-0}
+
+create_venv() {
+  if [[ "$VENV_CLEAR" == "1" ]]; then
+    uv venv --clear
+  else
+    uv venv --allow-existing
+  fi
+}
 
 case "$CMD" in
   --all)
@@ -20,7 +29,7 @@ esac
 
 case "$CMD" in
   setup)
-    uv venv
+    create_venv
     uv pip install -r requirements.txt -r requirements-dev.txt
     ;;
   migrate)
@@ -46,7 +55,7 @@ case "$CMD" in
     uv run pytest
     ;;
   all)
-    uv venv
+    create_venv
     uv pip install -r requirements.txt -r requirements-dev.txt
     uv run alembic upgrade head
     uv run python -m app.ingest.weather --data-dir "$DATA_DIR"
