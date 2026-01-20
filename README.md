@@ -11,6 +11,13 @@ uv pip install -r requirements.txt -r requirements-dev.txt
 
 export PYTHONPATH=src
 
+# Optional env vars (defaults shown)
+# DATABASE_URL=sqlite:///./weather_yield.db
+# PAGE_SIZE_DEFAULT=100
+# PAGE_SIZE_MAX=1000
+# DATA_DIR=wx_data
+# YIELD_FILE=yld_data/US_corn_grain_yield.txt
+
 # Run migrations
 uv run alembic upgrade head
 
