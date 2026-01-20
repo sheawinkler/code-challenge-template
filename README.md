@@ -2,6 +2,8 @@
 
 ## Quick start
 
+If you just want the app running, follow the block below. I also included `just` and `scripts.run.sh` shortcuts.
+
 Prereqs: `uv` (recommended). If you don’t have `uv`, no worries — you can use `python -m venv` + `pip install -r requirements.txt -r requirements-dev.txt` instead.
 
 ```bash
@@ -46,22 +48,9 @@ Optional Postgres smoke test (only runs if you set a Postgres URL):
 POSTGRES_TEST_URL=postgresql://user:pass@localhost:5432/weather uv run pytest -m postgres
 ```
 
-## Optional helpers
+## Justfile & scripts/run.sh
+Quickly run with `scripts/run.sh all` or `just ingest-and-launch-api` (`install just`).
 
-If you want shortcuts, `scripts/run.sh` wraps common commands (requires `uv`):
-
-```bash
-scripts/run.sh all
-```
-
-You can also use the included `Justfile` (install `just` via your package manager):
-
-```bash
-just check
-just ingest-and-launch-api
-just docker-all
-just api-test # api must be live
-```
 
 ## Database configuration
 

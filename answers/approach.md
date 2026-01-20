@@ -33,21 +33,19 @@
 ## API
 - FastAPI with `/api/weather`, `/api/weather/stats`, and `/api/yield` endpoints.
 - FastAPI because...
-  - built-in OpenAPI/Swagger/redoc docs w/o need to configure
-  - built-in Pydantic: type hints, validation, docs automatically
-  - async-ready for on-demand jobs if required 
-  - lighter weight than most other options, still built to scale (flask, django, etc.)
+  - shortest path to typed APIs and docs in one place
+  - much faster setup and lighter to get going than pulling in Django stack.
 - Added `/api/ingestion/events` for ingestion event logs.
 - Filters for station/date/year and pagination are supported.
 - Responses return values converted to standard units (°C, cm).
-- Defaults to 3767 to avoid common ports; set `PORT=port_number` w/ a launch commmand
+- Defaults to 3767 to avoid common ports; set `PORT=port_number` w/ a launch command
 
 ## Databricks scaffolding
-- Separate DDL definitions for raw + curated + conflict tables (Delta Lake format tables).
-- Job stubs load raw data then merge into curated with the same rule order.
-- Not fully implemented
+- Databricks scaffolding exists to mirror the raw→curated pattern; it’s intentionally light with work remaining.
 
-## Post-implementation analysis (brief)
-- **Strengths**: deterministic ingestion resolves conflicts (duplicate `station_id`, `year`), audit trail, idempotent stats, simple API endpoints w/ uniform filters & pagintion, database versioning
-- **Tradeoffs**: raw table grows per run; no retention policy or partition pruning for non-Postgres;  
-- **Next steps**: set retention policy, Github CI/CD integration, Postgres & API smoke test in CI/CD, SSO for app / other required credentials for AWS services (and any data input APIs) stored in application env space via k8s or accessed as application secrets via AWS, etc.
+## What I'd do next 
+- Set retention policy for raw data.
+- GitHub CI/CD integration.
+- Smoke testing in CI/CD.
+- Credentials management.
+- Test deployment to AWS.
