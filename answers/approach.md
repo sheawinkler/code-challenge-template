@@ -31,9 +31,14 @@
 
 ## API
 - FastAPI with `/api/weather`, `/api/weather/stats`, and `/api/yield` endpoints.
+- FastAPI because...
+  - built-in OpenAPI/Swagger docs w/o need to configure
+  - built-in Pydantic: type hints, validation, docs automatically
+  - async-ready for on-demand jobs if required 
+  - lighter weight than most other options, still built to scale (flask, django, etc.)
 - Added `/api/ingestion/events` for ingestion event logs.
 - Filters for station/date/year and pagination are supported.
-- Responses return values in standard units (°C, cm) where applicable.
+- Responses return values converted to standard units (°C, cm).
 
 ## Databricks scaffolding
 - Separate DDL for raw + curated + conflict tables.
