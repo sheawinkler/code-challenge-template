@@ -21,7 +21,8 @@
 ## Ingestion
 - Raw inserts are append-only; duplicates across runs are preserved for audit.
 - Curated table merge rules:
-  1) prefer non-missing fields, 2) latest raw record wins for conflicts.
+  1) prefer non-missing fields, 
+  2) latest raw record wins for conflicts.
 - Conflicts are logged to `weather_conflicts`.
 - `ingestion_runs` + `ingestion_events` store per-run totals and key log events (so we’re not relying on text logs).
 
@@ -32,19 +33,21 @@
 ## API
 - FastAPI with `/api/weather`, `/api/weather/stats`, and `/api/yield` endpoints.
 - FastAPI because...
-  - built-in OpenAPI/Swagger docs w/o need to configure
+  - built-in OpenAPI/Swagger/redoc docs w/o need to configure
   - built-in Pydantic: type hints, validation, docs automatically
   - async-ready for on-demand jobs if required 
   - lighter weight than most other options, still built to scale (flask, django, etc.)
 - Added `/api/ingestion/events` for ingestion event logs.
 - Filters for station/date/year and pagination are supported.
 - Responses return values converted to standard units (°C, cm).
+- Defaults to 3767 to avoid common ports; set `PORT=port_number` w/ a launch commmand
 
 ## Databricks scaffolding
-- Separate DDL for raw + curated + conflict tables.
+- Separate DDL definitions for raw + curated + conflict tables (Delta Lake format tables).
 - Job stubs load raw data then merge into curated with the same rule order.
+- Not fully implemented
 
 ## Post-implementation analysis (brief)
-- Strengths: deterministic ingestion, audit trail, idempotent stats, clear API surface.
-- Tradeoffs: raw table grows per run; no retention policy or partition pruning for non-Postgres.
-- Next steps: retention/partition maintenance, Postgres smoke test in CI, optional ingestion run API.
+- **Strengths**: deterministic ingestion resolves conflicts (duplicate `station_id`, `year`), audit trail, idempotent stats, simple API endpoints w/ uniform filters & pagintion, database versioning
+- **Tradeoffs**: raw table grows per run; no retention policy or partition pruning for non-Postgres;  
+- **Next steps**: set retention policy, Github CI/CD integration, Postgres & API smoke test in CI/CD, SSO for app / other required credentials for AWS services (and any data input APIs) stored in application env space via k8s or accessed as application secrets via AWS, etc.
