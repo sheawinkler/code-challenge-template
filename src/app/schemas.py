@@ -26,6 +26,15 @@ class CropYieldOut(BaseModel):
     yield_value: int
 
 
+class AnnualYieldWeatherSummaryOut(BaseModel):
+    year: int
+    yield_value: int
+    avg_max_temp_c: float | None
+    avg_min_temp_c: float | None
+    avg_total_precip_cm: float | None
+    station_count: int
+
+
 class PaginatedWeatherResponse(BaseModel):
     data: list[WeatherRecordOut]
     page: int
@@ -42,6 +51,13 @@ class PaginatedStatsResponse(BaseModel):
 
 class PaginatedYieldResponse(BaseModel):
     data: list[CropYieldOut]
+    page: int
+    page_size: int
+    total: int
+
+
+class PaginatedAnnualYieldWeatherSummaryResponse(BaseModel):
+    data: list[AnnualYieldWeatherSummaryOut]
     page: int
     page_size: int
     total: int

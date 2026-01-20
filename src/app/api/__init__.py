@@ -1,3 +1,3 @@
-from app.api import ingestion, stats, weather, yield_data
+from app.api import ingestion, stats, summary, weather, yield_data
 
-__all__ = ["ingestion", "stats", "weather", "yield_data"]
+__all__ = ["ingestion", "stats", "summary", "weather", "yield_data"]

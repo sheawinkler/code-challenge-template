@@ -96,3 +96,39 @@ def test_stats_endpoint_invalid_year_range(client, test_engine):
         params={"year": 2000, "year_start": 1999},
     )
     assert response.status_code == 400
+
+
+def test_annual_yield_weather_summary(client, test_engine):
+    with db.SessionLocal() as session:
+        session.add_all([WeatherStation(station_id="STATION1"), WeatherStation(station_id="STATION2")])
+        session.add_all(
+            [
+                WeatherStats(
+                    station_id="STATION1",
+                    year=2000,
+                    avg_max_temp_c=10.0,
+                    avg_min_temp_c=1.0,
+                    total_precip_cm=2.0,
+                ),
+                WeatherStats(
+                    station_id="STATION2",
+                    year=2000,
+                    avg_max_temp_c=20.0,
+                    avg_min_temp_c=3.0,
+                    total_precip_cm=4.0,
+                ),
+            ]
+        )
+        session.add(CropYield(year=2000, yield_value=123))
+        session.commit()
+
+    response = client.get("/api/summary/annual_yield_and_weather", params={"year": 2000})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["total"] == 1
+    assert payload["data"][0]["year"] == 2000
+    assert payload["data"][0]["yield_value"] == 123
+    assert payload["data"][0]["station_count"] == 2
+    assert payload["data"][0]["avg_max_temp_c"] == 15.0
+    assert payload["data"][0]["avg_min_temp_c"] == 2.0
+    assert payload["data"][0]["avg_total_precip_cm"] == 3.0

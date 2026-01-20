@@ -38,6 +38,7 @@
   - async-ready for on-demand jobs if required 
   - lighter weight than most other options, still built to scale (flask, django, etc.)
 - Added `/api/ingestion/events` for ingestion event logs.
+- Added `/api/summary/annual_yield_and_weather` for yearly crop yield + station-averaged weather stats (dataset covers NE/IA/IL/IN/OH, so we treat this as a Midwest rollup).
 - Filters for station/date/year and pagination are supported.
 - Responses return values converted to standard units (°C, cm).
 - Defaults to 3767 to avoid common ports; set `PORT=port_number` w/ a launch commmand
