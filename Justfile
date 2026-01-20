@@ -45,7 +45,7 @@ docker-all:
   docker compose run --rm app python -m app.ingest.yield --file "{{YIELD_FILE}}"
   docker compose run --rm app python -m app.stats
   docker compose up -d
-  @echo "API should be running at http://127.0.0.1:{{PORT}}"
+  @echo "API is running at http://127.0.0.1:{{PORT}}"
 
 docker-all-postgres:
   docker compose --profile postgres up -d db
