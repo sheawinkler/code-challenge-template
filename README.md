@@ -138,10 +138,10 @@ If you want a containerized run, build and run the API with SQLite (data persist
 
 ```bash
 docker compose up --build
-docker compose run --rm app uv run alembic upgrade head
-docker compose run --rm app uv run python -m app.ingest.weather --data-dir wx_data
-docker compose run --rm app uv run python -m app.ingest.yield --file yld_data/US_corn_grain_yield.txt
-docker compose run --rm app uv run python -m app.stats
+docker compose run --rm app python -m alembic upgrade head
+docker compose run --rm app python -m app.ingest.weather --data-dir wx_data
+docker compose run --rm app python -m app.ingest.yield --file yld_data/US_corn_grain_yield.txt
+docker compose run --rm app python -m app.stats
 ```
 
 To use Postgres instead of SQLite:
@@ -151,7 +151,7 @@ DATABASE_URL=postgresql://weather:weather@db:5432/weather \\
   docker compose --profile postgres up --build
 
 DATABASE_URL=postgresql://weather:weather@db:5432/weather \\
-  docker compose run --rm app uv run alembic upgrade head
+  docker compose run --rm app python -m alembic upgrade head
 ```
 
 ## Databricks scaffolding
