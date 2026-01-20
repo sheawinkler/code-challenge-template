@@ -22,10 +22,10 @@ uv run python -m app.ingest.yield --file yld_data/US_corn_grain_yield.txt
 uv run python -m app.stats
 
 # Run API
-uv run uvicorn app.main:app --reload --app-dir src
+uv run uvicorn app.main:app --reload --app-dir src --port 3767
 ```
 
-API docs: `http://127.0.0.1:8000/docs`
+API docs: `http://127.0.0.1:3767/docs`
 
 ## Tests
 
@@ -80,7 +80,7 @@ All endpoints support pagination (`page`, `page_size`) and filtering via query p
 ### Weather
 API:
 ```bash
-curl "http://127.0.0.1:8000/api/weather?station_id=USC00110072&start_date=2010-01-01&end_date=2010-12-31&page=1&page_size=100"
+curl "http://127.0.0.1:3767/api/weather?station_id=USC00110072&start_date=2010-01-01&end_date=2010-12-31&page=1&page_size=100"
 ```
 SQL:
 ```sql
@@ -94,7 +94,7 @@ ORDER BY date;
 ### Weather stats
 API:
 ```bash
-curl "http://127.0.0.1:8000/api/weather/stats?station_id=USC00110072&year_start=2010&year_end=2014"
+curl "http://127.0.0.1:3767/api/weather/stats?station_id=USC00110072&year_start=2010&year_end=2014"
 ```
 SQL:
 ```sql
@@ -108,7 +108,7 @@ ORDER BY year;
 ### Crop yield
 API:
 ```bash
-curl "http://127.0.0.1:8000/api/yield?year_start=2000&year_end=2010"
+curl "http://127.0.0.1:3767/api/yield?year_start=2000&year_end=2010"
 ```
 SQL:
 ```sql
@@ -121,7 +121,7 @@ ORDER BY year;
 ### Ingestion events
 API:
 ```bash
-curl "http://127.0.0.1:8000/api/ingestion/events?ingestion_run_id=1&level=INFO"
+curl "http://127.0.0.1:3767/api/ingestion/events?ingestion_run_id=1&level=INFO"
 ```
 SQL:
 ```sql

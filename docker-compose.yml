@@ -2,15 +2,16 @@ services:
   app:
     build: .
     ports:
-      - "8000:8000"
+      - "3767:3767"
     environment:
       PYTHONPATH: src
       DATABASE_URL: ${DATABASE_URL:-sqlite:///./data/weather_yield.db}
+      PORT: ${PORT:-3767}
     volumes:
       - .:/app
       - app-data:/app/data
     command: >
-      bash -lc "uvicorn app.main:app --host 0.0.0.0 --port 8000 --app-dir src"
+      bash -lc "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-3767} --app-dir src"
 
   db:
     image: postgres:16

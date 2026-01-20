@@ -6,10 +6,17 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 
-CMD=${1:-all}
+CMD=${1:---all}
 DATA_DIR=${DATA_DIR:-wx_data}
 YIELD_FILE=${YIELD_FILE:-yld_data/US_corn_grain_yield.txt}
+PORT=${PORT:-3767}
 export PYTHONPATH=${PYTHONPATH:-src}
+
+case "$CMD" in
+  --all)
+    CMD=all
+    ;;
+esac
 
 case "$CMD" in
   setup)
@@ -27,7 +34,7 @@ case "$CMD" in
     uv run python -m app.stats
     ;;
   api)
-    uv run uvicorn app.main:app --reload --app-dir src
+    uv run uvicorn app.main:app --reload --app-dir src --port "$PORT"
     ;;
   lint)
     uv run ruff check .
@@ -39,13 +46,16 @@ case "$CMD" in
     uv run pytest
     ;;
   all)
+    uv venv
+    uv pip install -r requirements.txt -r requirements-dev.txt
     uv run alembic upgrade head
     uv run python -m app.ingest.weather --data-dir "$DATA_DIR"
     uv run python -m app.ingest.yield --file "$YIELD_FILE"
     uv run python -m app.stats
+    uv run uvicorn app.main:app --reload --app-dir src --port "$PORT"
     ;;
   *)
-    echo "Usage: scripts/run.sh {setup|migrate|ingest|stats|api|lint|check|all}" >&2
+    echo "Usage: scripts/run.sh {setup|migrate|ingest|stats|api|lint|check|all|--all} (PORT=${PORT})" >&2
     exit 1
     ;;
 esac
