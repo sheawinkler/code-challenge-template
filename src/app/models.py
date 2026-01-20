@@ -9,6 +9,7 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 
@@ -101,10 +102,12 @@ class WeatherRecordRaw(Base):
     source_line = Column(Integer, nullable=False)
     ingested_at = Column(DateTime, nullable=False)
     ingestion_run_id = Column(Integer, ForeignKey("ingestion_runs.id"), nullable=False)
+    row_hash = Column(String(64), nullable=False)
 
     __table_args__ = (
         Index("ix_weather_raw_station_date", "station_id", "date"),
         Index("ix_weather_raw_run", "ingestion_run_id"),
+        UniqueConstraint("row_hash", name="uq_weather_raw_row_hash"),
     )
 
 

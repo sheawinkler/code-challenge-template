@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,6 +21,7 @@ from app.models import (
 )
 
 MISSING_VALUE = -9999
+HASH_MISSING_VALUE = "NA"
 
 
 def _rowcount(result) -> int:
@@ -57,6 +59,24 @@ def _parse_value(raw: str) -> int | None:
     if value == MISSING_VALUE:
         return None
     return value
+
+
+def _row_hash(
+    station_id: str,
+    record_date,
+    max_temp: int | None,
+    min_temp: int | None,
+    precip: int | None,
+) -> str:
+    parts = [
+        station_id,
+        record_date.isoformat(),
+        str(max_temp) if max_temp is not None else HASH_MISSING_VALUE,
+        str(min_temp) if min_temp is not None else HASH_MISSING_VALUE,
+        str(precip) if precip is not None else HASH_MISSING_VALUE,
+    ]
+    payload = "|".join(parts)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _parse_line(line: str):
@@ -159,7 +179,7 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
 
         if db.engine.dialect.name == "sqlite":
             max_sqlite_vars = 999
-            columns_per_row = 9
+            columns_per_row = 10
             max_rows = max_sqlite_vars // columns_per_row
             batch_size = min(batch_size, max_rows if max_rows > 0 else 1)
 
@@ -197,6 +217,13 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
                             "source_line": line_number,
                             "ingested_at": run_started_at,
                             "ingestion_run_id": run.id,
+                            "row_hash": _row_hash(
+                                station_id,
+                                parsed["date"],
+                                parsed["max_temp_tenths_c"],
+                                parsed["min_temp_tenths_c"],
+                                parsed["precip_tenths_mm"],
+                            ),
                         }
                     )
                     total_processed += 1
@@ -206,6 +233,7 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
                             session,
                             WeatherRecordRaw.__table__,
                             batch,
+                            ["row_hash"],
                         )
                         session.commit()
                         batch.clear()
@@ -215,6 +243,7 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
                 session,
                 WeatherRecordRaw.__table__,
                 batch,
+                ["row_hash"],
             )
             session.commit()
 

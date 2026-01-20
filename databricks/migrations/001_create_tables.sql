@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS weather_records_raw (
   source_file STRING NOT NULL,
   source_line INT NOT NULL,
   ingested_at TIMESTAMP NOT NULL,
-  ingestion_run_id BIGINT NOT NULL
+  ingestion_run_id BIGINT NOT NULL,
+  row_hash STRING NOT NULL
 ) USING DELTA;
 
 CREATE TABLE IF NOT EXISTS weather_conflicts (

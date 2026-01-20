@@ -45,10 +45,10 @@ def test_weather_ingest_idempotent(test_engine, tmp_path):
 
     with db.SessionLocal() as session:
         raw_count = session.execute(select(func.count()).select_from(WeatherRecordRaw)).scalar_one()
-        assert raw_count == 6
+        assert raw_count == 3
         curated_count = session.execute(
             select(func.count()).select_from(WeatherRecord)
         ).scalar_one()
         assert curated_count == 2
         conflicts = session.execute(select(func.count()).select_from(WeatherConflict)).scalar_one()
-        assert conflicts == 2
+        assert conflicts == 1

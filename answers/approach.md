@@ -19,7 +19,7 @@
 - `crop_yield`: one row per year with the raw yield value from the provided file.
 
 ## Ingestion
-- Raw inserts are append-only; duplicates across runs are preserved for audit.
+- Raw inserts are append-only but de-duped by station/date/values so re-uploaded files don’t create duplicates.
 - Curated table merge rules:
   1) prefer non-missing fields, 
   2) latest raw record wins for conflicts.

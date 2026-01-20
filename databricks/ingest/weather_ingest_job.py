@@ -40,6 +40,7 @@ def main(input_path: str, output_table: str) -> None:
     )
 
     # TODO: add station_id column from file path or upstream metadata
+    # TODO: compute row_hash (station_id + date + values) for dedupe
     # TODO: write to weather_records_raw and then merge into weather_records
 
     df.write.format("delta").mode("append").saveAsTable(output_table)

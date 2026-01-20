@@ -47,8 +47,10 @@ CREATE TABLE weather_records_raw (
   source_line INTEGER NOT NULL,
   ingested_at TIMESTAMP NOT NULL,
   ingestion_run_id INTEGER NOT NULL,
+  row_hash TEXT NOT NULL,
   FOREIGN KEY (station_id) REFERENCES weather_stations(station_id),
-  FOREIGN KEY (ingestion_run_id) REFERENCES ingestion_runs(id)
+  FOREIGN KEY (ingestion_run_id) REFERENCES ingestion_runs(id),
+  UNIQUE (row_hash)
 );
 
 CREATE TABLE weather_conflicts (
