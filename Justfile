@@ -1,4 +1,5 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+export PYTHONPATH := "src"
 
 default:
   @just --list
