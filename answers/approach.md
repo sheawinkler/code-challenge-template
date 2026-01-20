@@ -31,8 +31,13 @@
 
 ## API
 - FastAPI with `/api/weather`, `/api/weather/stats`, and `/api/yield` endpoints.
+- Added `/api/ingestion/events` for ingestion event logs.
 - Filters for station/date/year and pagination are supported.
 - Responses return values in standard units (°C, cm) where applicable.
+
+## Logs table
+- `ingestion_events` is a lightweight log table tied to `ingestion_runs`.
+- It captures key ingestion milestones (start, merge, conflicts, end) in a queryable format.
 
 ## Databricks scaffolding
 - Separate DDL for raw + curated + conflict tables.
