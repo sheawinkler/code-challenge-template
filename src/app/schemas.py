@@ -45,3 +45,17 @@ class PaginatedYieldResponse(BaseModel):
     page: int
     page_size: int
     total: int
+
+
+class IngestionEventOut(BaseModel):
+    ingestion_run_id: int
+    level: str
+    message: str
+    created_at: str
+
+
+class PaginatedIngestionEventsResponse(BaseModel):
+    data: list[IngestionEventOut]
+    page: int
+    page_size: int
+    total: int

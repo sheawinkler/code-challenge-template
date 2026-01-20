@@ -71,6 +71,7 @@ just check
 - `GET /api/weather`
 - `GET /api/weather/stats`
 - `GET /api/yield`
+- `GET /api/ingestion/events`
 
 All endpoints support pagination (`page`, `page_size`) and filtering via query parameters.
 
