@@ -38,8 +38,54 @@
 ## Logs table
 - `ingestion_events` is a lightweight log table tied to `ingestion_runs`.
 - It captures key ingestion milestones (start, merge, conflicts, end) in a queryable format.
-- Example (find conflict-related log entries):
+## Examples (API + SQL)
+### Weather
+API:
+```bash
+curl "http://127.0.0.1:8000/api/weather?station_id=USC00110072&start_date=2010-01-01&end_date=2010-12-31&page=1&page_size=100"
+```
+SQL:
+```sql
+SELECT *
+FROM weather_records
+WHERE station_id = 'USC00110072'
+  AND date BETWEEN '2010-01-01' AND '2010-12-31'
+ORDER BY date;
+```
 
+### Weather stats
+API:
+```bash
+curl "http://127.0.0.1:8000/api/weather/stats?station_id=USC00110072&year_start=2010&year_end=2014"
+```
+SQL:
+```sql
+SELECT *
+FROM weather_stats
+WHERE station_id = 'USC00110072'
+  AND year BETWEEN 2010 AND 2014
+ORDER BY year;
+```
+
+### Crop yield
+API:
+```bash
+curl "http://127.0.0.1:8000/api/yield?year_start=2000&year_end=2010"
+```
+SQL:
+```sql
+SELECT *
+FROM crop_yield
+WHERE year BETWEEN 2000 AND 2010
+ORDER BY year;
+```
+
+### Ingestion events
+API:
+```bash
+curl "http://127.0.0.1:8000/api/ingestion/events?ingestion_run_id=1&level=INFO"
+```
+SQL:
 ```sql
 SELECT *
 FROM ingestion_events
