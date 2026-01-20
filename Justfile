@@ -45,6 +45,10 @@ docker-all:
   docker compose run --rm app uv run python -m app.ingest.yield --file "{{YIELD_FILE}}"
   docker compose run --rm app uv run python -m app.stats
 
+example:
+  @echo "Assumes API is already running on port {{PORT}}"
+  curl "http://127.0.0.1:{{PORT}}/api/weather?station_id=USC00110072&start_date=2010-01-01&end_date=2010-12-31&page=1&page_size=5"
+
 # Defaults
 DATA_DIR := "wx_data"
 YIELD_FILE := "yld_data/US_corn_grain_yield.txt"

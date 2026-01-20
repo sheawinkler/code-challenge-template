@@ -64,6 +64,7 @@ just ingest-and-launch-api
 just docker-all
 just lint
 just check
+just example
 ```
 
 ## Database configuration
