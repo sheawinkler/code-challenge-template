@@ -144,6 +144,12 @@ docker compose run --rm app python -m app.ingest.yield --file yld_data/US_corn_g
 docker compose run --rm app python -m app.stats
 ```
 
+If you just want the API container running (no ingest), this is enough:
+
+```bash
+docker compose up --build
+```
+
 To use Postgres instead of SQLite:
 
 ```bash
