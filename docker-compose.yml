@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONPATH: src
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///./data/weather_yield.db}
+    volumes:
+      - .:/app
+      - app-data:/app/data
+    command: >
+      bash -lc "uvicorn app.main:app --host 0.0.0.0 --port 8000 --app-dir src"
+
+  db:
+    image: postgres:16
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_DB: weather
+      POSTGRES_USER: weather
+      POSTGRES_PASSWORD: weather
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  app-data:
+  pg-data:

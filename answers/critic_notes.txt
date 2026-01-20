@@ -1,0 +1,16 @@
+**Findings**
+- **High**: API tests are likely flaky/empty because `sqlite:///:memory:` creates a new DB per connection, and `TestClient` runs requests in another thread/connection. Use `StaticPool` or a temp file DB to share the same connection. `tests/conftest.py:15-22`
+- **High**: SQLite foreign keys aren’t enforced by default, so `weather_records` can reference missing stations without error. Add `PRAGMA foreign_keys=ON` via a SQLAlchemy event listener for SQLite. `src/app/db.py:15-23`, `src/app/models.py:21`
+- **Medium**: Stats computation pulls all aggregates into Python memory before upsert; for larger datasets this is slow and memory‑heavy. Prefer `INSERT ... SELECT` (SQLAlchemy `insert().from_select()` + `ON CONFLICT`) or chunked streaming. `src/app/stats.py:56-79`
+- **Medium**: Ingestion counts use full table scans (`before_count`/`after_count`) which can be expensive at scale; consider counting inserts per batch using `RETURNING` (Postgres) or drop counts in favor of processed stats. `src/app/ingest/weather.py:62-109`, `src/app/ingest/yield.py:39-61`
+- **Low**: `app.ingest` is missing `__init__.py`, so `python -m app.ingest.weather` relies on namespace‑package behavior; add the file for portability. `src/app/ingest/`
+- **Low**: Missing API tests for `/api/weather/stats` filters and error cases (date/year conflicts); add for coverage. `tests/test_api.py`
+- **Low**: `ensure_date_range` is unused; either wire it in or remove. `src/app/utils.py:24-26`
+
+**Open questions / assumptions**
+- Do we want strict FK enforcement in SQLite (dev) to match Postgres behavior, or keep it lax for speed?
+- Is dataset size large enough to justify `INSERT ... SELECT` and avoiding full-table counts?
+- Should stats be recomputed from scratch each run, or incrementally updated by year?
+
+**Alternative self’s thoughts**
+I’d bias toward a Postgres‑first approach and remove dialect branches: use `COPY`/`COPY FROM` for fast ingestion, compute stats with a single `INSERT ... SELECT` into `weather_stats`, and skip Python‑side aggregation entirely. I’d make `/api/weather/stats` read from a materialized view (or rebuild on demand) and add keyset pagination for large data. For Databricks, I’d formalize a dbt project or DLT pipeline instead of raw SQL scripts, so schema + transformations are versioned and testable. I’d also add a minimal Docker Compose with Postgres to make the “production-like” path the default.
