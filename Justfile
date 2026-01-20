@@ -39,7 +39,7 @@ ingest-and-launch-api:
   just api
 
 docker-all:
-  docker compose up --build -d
+  docker compose --profile postgres up -d db
   docker compose run --rm app uv run alembic upgrade head
   docker compose run --rm app uv run python -m app.ingest.weather --data-dir "{{DATA_DIR}}"
   docker compose run --rm app uv run python -m app.ingest.yield --file "{{YIELD_FILE}}"
