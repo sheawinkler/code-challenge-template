@@ -75,7 +75,6 @@ just api-test # api must be live
 - `GET /api/weather`
 - `GET /api/weather/stats`
 - `GET /api/yield`
-- `GET /api/summary/annual_yield_and_weather`
 - `GET /api/ingestion/events`
 
 All endpoints support pagination (`page`, `page_size`) and filtering via query parameters.
@@ -121,36 +120,6 @@ SELECT *
 FROM crop_yield
 WHERE year BETWEEN 2000 AND 2010
 ORDER BY year;
-```
-
-### Annual yield + weather (Midwest dataset)
-API:
-```bash
-curl "http://127.0.0.1:3767/api/summary/annual_yield_and_weather?year_start=2000&year_end=2010"
-```
-SQL:
-```sql
-WITH yearly_weather AS (
-  SELECT
-    year,
-    AVG(avg_max_temp_c) AS avg_max_temp_c,
-    AVG(avg_min_temp_c) AS avg_min_temp_c,
-    AVG(total_precip_cm) AS avg_total_precip_cm,
-    COUNT(*) AS station_count
-  FROM weather_stats
-  GROUP BY year
-)
-SELECT
-  y.year,
-  y.yield_value,
-  w.avg_max_temp_c,
-  w.avg_min_temp_c,
-  w.avg_total_precip_cm,
-  w.station_count
-FROM crop_yield y
-JOIN yearly_weather w ON w.year = y.year
-WHERE y.year BETWEEN 2000 AND 2010
-ORDER BY y.year;
 ```
 
 ### Ingestion events
