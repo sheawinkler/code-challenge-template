@@ -39,13 +39,16 @@ ingest-and-launch-api:
   just api
 
 docker-all:
-  docker compose --profile postgres up -d db
   docker compose run --rm app uv run alembic upgrade head
   docker compose run --rm app uv run python -m app.ingest.weather --data-dir "{{DATA_DIR}}"
   docker compose run --rm app uv run python -m app.ingest.yield --file "{{YIELD_FILE}}"
   docker compose run --rm app uv run python -m app.stats
   docker compose up -d
   @echo "API should be running at http://127.0.0.1:{{PORT}}"
+
+docker-all-postgres:
+  docker compose --profile postgres up -d db
+  just docker-all
 
 example:
   @echo "Assumes API is already running on port {{PORT}}"
