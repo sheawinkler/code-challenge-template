@@ -52,19 +52,15 @@ If you want shortcuts, `scripts/run.sh` wraps common commands (requires `uv`):
 
 ```bash
 scripts/run.sh all
-scripts/run.sh api
 ```
 
 You can also use the included `Justfile` (install `just` via your package manager):
 
 ```bash
-just all
-just api
+just check
 just ingest-and-launch-api
 just docker-all
-just lint
-just check
-just example
+just api-test # api must be live
 ```
 
 ## Database configuration
