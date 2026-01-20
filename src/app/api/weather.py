@@ -13,17 +13,20 @@ from app.schemas import PaginatedWeatherResponse, WeatherRecordOut
 from app.utils import clamp_page_size, ensure_date_range, to_celsius, to_cm_from_tenths_mm
 
 router = APIRouter()
+DATE_QUERY = Query(default=None, alias="date")
+PAGE_SIZE_QUERY = Query(default=settings.page_size_default, ge=1)
+SESSION_DEP = Depends(get_session)
 
 
 @router.get("/weather", response_model=PaginatedWeatherResponse)
 def list_weather(
     station_id: str | None = None,
-    date_value: date | None = Query(default=None, alias="date"),
+    date_value: date | None = DATE_QUERY,
     start_date: date | None = None,
     end_date: date | None = None,
     page: int = 1,
-    page_size: int = Query(default=settings.page_size_default, ge=1),
-    session: Session = Depends(get_session),
+    page_size: int = PAGE_SIZE_QUERY,
+    session: Session = SESSION_DEP,
 ):
     try:
         ensure_date_range(date_value, start_date, end_date)

@@ -29,7 +29,10 @@ def test_weather_endpoint(client, test_engine):
         )
         session.commit()
 
-    response = client.get("/api/weather", params={"station_id": "STATION1", "page": 1, "page_size": 1})
+    response = client.get(
+        "/api/weather",
+        params={"station_id": "STATION1", "page": 1, "page_size": 1},
+    )
     assert response.status_code == 200
     payload = response.json()
     assert payload["total"] == 2
@@ -47,7 +50,12 @@ def test_weather_endpoint_invalid_date_range(client, test_engine):
 
 def test_yield_endpoint(client, test_engine):
     with db.SessionLocal() as session:
-        session.add_all([CropYield(year=2000, yield_value=123), CropYield(year=2001, yield_value=456)])
+        session.add_all(
+            [
+                CropYield(year=2000, yield_value=123),
+                CropYield(year=2001, yield_value=456),
+            ]
+        )
         session.commit()
 
     response = client.get("/api/yield", params={"page": 1, "page_size": 10})

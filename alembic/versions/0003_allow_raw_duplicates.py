@@ -5,6 +5,7 @@ Revises: 0002_raw_and_conflicts
 Create Date: 2026-01-20
 
 """
+
 from __future__ import annotations
 
 from alembic import op

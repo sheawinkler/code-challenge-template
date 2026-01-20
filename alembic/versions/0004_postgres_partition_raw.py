@@ -5,6 +5,7 @@ Revises: 0003_allow_raw_duplicates
 Create Date: 2026-01-20
 
 """
+
 from __future__ import annotations
 
 from alembic import op
@@ -26,8 +27,7 @@ def upgrade() -> None:
 
     op.execute("ALTER TABLE weather_records_raw RENAME TO weather_records_raw_old")
 
-    op.execute(
-        """
+    op.execute("""
         CREATE TABLE weather_records_raw (
           id SERIAL PRIMARY KEY,
           station_id TEXT NOT NULL REFERENCES weather_stations(station_id),
@@ -40,29 +40,22 @@ def upgrade() -> None:
           ingested_at TIMESTAMP NOT NULL,
           ingestion_run_id INTEGER NOT NULL REFERENCES ingestion_runs(id)
         ) PARTITION BY RANGE (date);
-        """
-    )
+        """)
 
     for year in range(1985, 2016):
-        op.execute(
-            f"""
+        op.execute(f"""
             CREATE TABLE weather_records_raw_{year} PARTITION OF weather_records_raw
             FOR VALUES FROM ('{year}-01-01') TO ('{year + 1}-01-01')
             PARTITION BY HASH (station_id);
-            """
-        )
+            """)
         for remainder in range(4):
-            op.execute(
-                f"""
+            op.execute(f"""
                 CREATE TABLE weather_records_raw_{year}_p{remainder}
                 PARTITION OF weather_records_raw_{year}
                 FOR VALUES WITH (MODULUS 4, REMAINDER {remainder});
-                """
-            )
+                """)
 
-    op.execute(
-        "CREATE INDEX ix_weather_raw_station_date ON weather_records_raw (station_id, date)"
-    )
+    op.execute("CREATE INDEX ix_weather_raw_station_date ON weather_records_raw (station_id, date)")
     op.execute("CREATE INDEX ix_weather_raw_run ON weather_records_raw (ingestion_run_id)")
 
     op.execute("INSERT INTO weather_records_raw SELECT * FROM weather_records_raw_old")
@@ -74,8 +67,7 @@ def downgrade() -> None:
         return
 
     op.execute("ALTER TABLE weather_records_raw RENAME TO weather_records_raw_part")
-    op.execute(
-        """
+    op.execute("""
         CREATE TABLE weather_records_raw (
           id SERIAL PRIMARY KEY,
           station_id TEXT NOT NULL REFERENCES weather_stations(station_id),
@@ -88,8 +80,7 @@ def downgrade() -> None:
           ingested_at TIMESTAMP NOT NULL,
           ingestion_run_id INTEGER NOT NULL REFERENCES ingestion_runs(id)
         );
-        """
-    )
+        """)
     op.execute("CREATE INDEX ix_weather_raw_station_date ON weather_records_raw (station_id, date)")
     op.execute("CREATE INDEX ix_weather_raw_run ON weather_records_raw (ingestion_run_id)")
     op.execute("INSERT INTO weather_records_raw SELECT * FROM weather_records_raw_part")

@@ -11,6 +11,8 @@ from app.schemas import PaginatedStatsResponse, WeatherStatsOut
 from app.utils import clamp_page_size
 
 router = APIRouter()
+PAGE_SIZE_QUERY = Query(default=settings.page_size_default, ge=1)
+SESSION_DEP = Depends(get_session)
 
 
 @router.get("/weather/stats", response_model=PaginatedStatsResponse)
@@ -20,11 +22,14 @@ def list_weather_stats(
     year_start: int | None = None,
     year_end: int | None = None,
     page: int = 1,
-    page_size: int = Query(default=settings.page_size_default, ge=1),
-    session: Session = Depends(get_session),
+    page_size: int = PAGE_SIZE_QUERY,
+    session: Session = SESSION_DEP,
 ):
     if year and (year_start or year_end):
-        raise HTTPException(status_code=400, detail="Use either year or year_start/year_end, not both.")
+        raise HTTPException(
+            status_code=400,
+            detail="Use either year or year_start/year_end, not both.",
+        )
 
     page = max(page, 1)
     page_size = clamp_page_size(page_size, settings.page_size_max)

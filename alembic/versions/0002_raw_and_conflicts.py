@@ -5,10 +5,12 @@ Revises: 0001_create_tables
 Create Date: 2026-01-20
 
 """
+
 from __future__ import annotations
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = "0002_raw_and_conflicts"
 down_revision = "0001_create_tables"

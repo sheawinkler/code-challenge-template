@@ -11,8 +11,8 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from app import db
 from app.models import (
-    IngestionRun,
     IngestionEvent,
+    IngestionRun,
     WeatherConflict,
     WeatherRecord,
     WeatherRecordRaw,
@@ -385,7 +385,9 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
             .distinct()
             .subquery()
         )
-        upserted_curated = session.execute(select(func.count()).select_from(distinct_pairs)).scalar_one()
+        upserted_curated = session.execute(
+            select(func.count()).select_from(distinct_pairs)
+        ).scalar_one()
 
         end = datetime.now(timezone.utc)
         logging.info("Weather ingestion finished at %s", end.isoformat())
@@ -398,7 +400,10 @@ def ingest_weather(data_dir: Path, batch_size: int = 10000) -> dict[str, int]:
             session,
             run.id,
             "INFO",
-            f"processed={total_processed} raw_inserted={total_inserted} curated_upserted={upserted_curated}",
+            (
+                f"processed={total_processed} raw_inserted={total_inserted} "
+                f"curated_upserted={upserted_curated}"
+            ),
             end,
         )
 

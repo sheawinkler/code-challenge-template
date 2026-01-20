@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Databricks Job placeholder for ingesting weather data into Delta tables.
 """
+
+from __future__ import annotations
 
 import argparse
 
@@ -32,7 +32,11 @@ def main(input_path: str, output_table: str) -> None:
         .withColumn("max_temp_tenths_c", F.col("max_temp_tenths_c").cast("int"))
         .withColumn("min_temp_tenths_c", F.col("min_temp_tenths_c").cast("int"))
         .withColumn("precip_tenths_mm", F.col("precip_tenths_mm").cast("int"))
-        .replace(MISSING_VALUE, None, subset=["max_temp_tenths_c", "min_temp_tenths_c", "precip_tenths_mm"])
+        .replace(
+            MISSING_VALUE,
+            None,
+            subset=["max_temp_tenths_c", "min_temp_tenths_c", "precip_tenths_mm"],
+        )
     )
 
     # TODO: add station_id column from file path or upstream metadata

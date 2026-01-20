@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from app import db
 from sqlalchemy import text
 
+from app import db
 from app.models import IngestionEvent, IngestionRun
 
 

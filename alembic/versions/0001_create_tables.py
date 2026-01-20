@@ -1,14 +1,16 @@
 """create initial tables
 
 Revision ID: 0001_create_tables
-Revises: 
+Revises:
 Create Date: 2026-01-20
 
 """
+
 from __future__ import annotations
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = "0001_create_tables"
 down_revision = None
@@ -24,20 +26,28 @@ def upgrade() -> None:
 
     op.create_table(
         "weather_records",
-        sa.Column("station_id", sa.String(), sa.ForeignKey("weather_stations.station_id"), primary_key=True),
+        sa.Column(
+            "station_id",
+            sa.String(),
+            sa.ForeignKey("weather_stations.station_id"),
+            primary_key=True,
+        ),
         sa.Column("date", sa.Date(), primary_key=True),
         sa.Column("max_temp_tenths_c", sa.Integer(), nullable=True),
         sa.Column("min_temp_tenths_c", sa.Integer(), nullable=True),
         sa.Column("precip_tenths_mm", sa.Integer(), nullable=True),
     )
     op.create_index("ix_weather_records_date", "weather_records", ["date"])
-    op.create_index(
-        "ix_weather_records_station_date", "weather_records", ["station_id", "date"]
-    )
+    op.create_index("ix_weather_records_station_date", "weather_records", ["station_id", "date"])
 
     op.create_table(
         "weather_stats",
-        sa.Column("station_id", sa.String(), sa.ForeignKey("weather_stations.station_id"), primary_key=True),
+        sa.Column(
+            "station_id",
+            sa.String(),
+            sa.ForeignKey("weather_stations.station_id"),
+            primary_key=True,
+        ),
         sa.Column("year", sa.Integer(), primary_key=True),
         sa.Column("avg_max_temp_c", sa.Float(), nullable=True),
         sa.Column("avg_min_temp_c", sa.Float(), nullable=True),

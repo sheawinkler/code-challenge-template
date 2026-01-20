@@ -21,9 +21,14 @@ def test_weather_ingest_idempotent(test_engine, tmp_path):
     with db.SessionLocal() as session:
         raw_count = session.execute(select(func.count()).select_from(WeatherRecordRaw)).scalar_one()
         assert raw_count == 3
-        curated_count = session.execute(select(func.count()).select_from(WeatherRecord)).scalar_one()
+        curated_count = session.execute(
+            select(func.count()).select_from(WeatherRecord)
+        ).scalar_one()
         assert curated_count == 2
-        record = session.get(WeatherRecord, {"station_id": "TESTSTATION", "date": date(1985, 1, 2)})
+        record = session.get(
+            WeatherRecord,
+            {"station_id": "TESTSTATION", "date": date(1985, 1, 2)},
+        )
         assert record.max_temp_tenths_c is None
         assert record.min_temp_tenths_c is None
         assert record.precip_tenths_mm is None
@@ -41,7 +46,9 @@ def test_weather_ingest_idempotent(test_engine, tmp_path):
     with db.SessionLocal() as session:
         raw_count = session.execute(select(func.count()).select_from(WeatherRecordRaw)).scalar_one()
         assert raw_count == 6
-        curated_count = session.execute(select(func.count()).select_from(WeatherRecord)).scalar_one()
+        curated_count = session.execute(
+            select(func.count()).select_from(WeatherRecord)
+        ).scalar_one()
         assert curated_count == 2
         conflicts = session.execute(select(func.count()).select_from(WeatherConflict)).scalar_one()
         assert conflicts == 2

@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """
 Databricks Job placeholder for ingesting crop yield data into Delta tables.
 """
+
+from __future__ import annotations
 
 import argparse
 
